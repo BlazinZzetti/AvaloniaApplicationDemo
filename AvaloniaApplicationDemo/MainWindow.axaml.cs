@@ -14,7 +14,10 @@ public partial class MainWindow : Window
 {
     private string appStart
     {
-        get { return AppContext.BaseDirectory.Replace("net6.0\\", ""); }
+        get
+        {
+            return AppContext.BaseDirectory.Replace("net6.0\\", "").Replace("net6.0/", "");
+        }
     }
 
     private string dolphinPath
