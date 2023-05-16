@@ -16,16 +16,20 @@
                 Name="PlayButton">
             <TextBlock TextAlignment="Center">Run Shadow SX</TextBlock>
         </Button>
-        <Button Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,5,0,5">
+        <Button Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,5,0,5"
+                Name="CreateROMButton">
             <TextBlock TextAlignment="Center">Create Shadow SX Run</TextBlock>
         </Button>
-        <Button Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,5,0,5">
+        <Button Grid.Row="3" HorizontalAlignment="Stretch" Margin="0,5,0,5"
+                Name="OpenGameLocationButton">
             <TextBlock TextAlignment="Center">Open Game Location</TextBlock>
         </Button>
-        <Button Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,5,0,5">
+        <Button Grid.Row="4" HorizontalAlignment="Stretch" Margin="0,5,0,5"
+                Name="OpenSaveFileLocationButton">
             <TextBlock TextAlignment="Center">Save File Management</TextBlock>
         </Button>
-        <Button Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,5,0,0">
+        <Button Grid.Row="5" HorizontalAlignment="Stretch" Margin="0,5,0,0"
+                Name="SettingsButton">
             <TextBlock TextAlignment="Center">Settings</TextBlock>
         </Button>
     </Grid>
