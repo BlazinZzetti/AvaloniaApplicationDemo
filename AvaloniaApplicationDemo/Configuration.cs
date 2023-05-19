@@ -11,6 +11,7 @@ public class Configuration
 
     private XmlDocument configurationXml;
 
+    public string DolphinLocation;
     public string RomLocation;
     public bool UseModernUiControl;
     public bool DisableSkipCutscenes;
@@ -41,6 +42,7 @@ public class Configuration
     {
         configurationXml = null;
 
+        DolphinLocation = "";
         RomLocation = "";
         UseModernUiControl = false;
         DisableSkipCutscenes = false;
@@ -84,6 +86,11 @@ public class Configuration
 
         foreach (XmlElement node in configurationXml.DocumentElement)
         {
+            if (node.Name == "DolphinLocation")
+            {
+                DolphinLocation = node.InnerText;
+            }
+            
             if (node.Name == "RomLocation")
             {
                 RomLocation = node.InnerText;
@@ -122,6 +129,9 @@ public class Configuration
 
         var mainNode = configurationXml.CreateElement("Settings");
 
+        var xmlElementDolphinLocation = configurationXml.CreateElement("DolphinLocation");
+        xmlElementDolphinLocation.InnerText = RomLocation;
+        
         var xmlElementRomLocation = configurationXml.CreateElement("RomLocation");
         xmlElementRomLocation.InnerText = RomLocation;
         

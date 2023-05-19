@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Dialogs;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform;
@@ -22,7 +25,7 @@ public partial class MainWindow : Window
 
     private string dolphinPath
     {
-        get { return  appStart + @"Dolphin-x64\"; }
+        get { return Configuration.Instance.DolphinLocation; }
     }
         
     private string savePath
@@ -73,15 +76,98 @@ public partial class MainWindow : Window
         OpenGameLocationButton.Click += OpenGameLocationButtonPressed;
         OpenSaveFileLocationButton.Click += OnSaveFileButtonPressed;
     }
-    
-    private void OnPlayButtonPressed(object? sender, RoutedEventArgs e)
+
+    private void EnableButtons(bool enable)
     {
-        var path = dolphinPath;
-        var path2 = appStart;
-        //PlayButton.Background = new SolidColorBrush(0xFFFFFF);
-        
+        PlayButton.IsEnabled = enable;
     }
     
+    private async void OnPlayButtonPressed(object? sender, RoutedEventArgs e)
+    {
+        EnableButtons(false);
+        
+        if (string.IsNullOrEmpty(Configuration.Instance.DolphinLocation))
+        {
+            await OpenSetDolphinDialog();
+        }
+
+        if (!string.IsNullOrEmpty(Configuration.Instance.DolphinLocation))
+        {
+            //Check if Rom Location has been set at all.
+            if (string.IsNullOrEmpty(Configuration.Instance.RomLocation))
+            {
+                await OpenSetRomDialog();
+            }
+
+            //Only continue if Rom Location has been set, in case it was not in the above code. 
+            if (!string.IsNullOrEmpty(Configuration.Instance.RomLocation))
+            {
+                //Double check if the provided path has a file, if not re-prompt for a ROM.
+                if (!File.Exists(Configuration.Instance.RomLocation))
+                {
+                    //MessageBox.Show("ROM file not found. Please provide ROM location again.");
+                    //OpenRomDialog();
+                }
+
+                //At this point assume there is a correct ROM. Technically nothing stopping a user from
+                //choosing whatever ROM they want to launch, but trying to account for that without additional
+                //annoying checks and processes is not worth it.
+
+                UpdateCustomAssets();
+
+                //Double check the .exe is found before attempting to run it.
+                if (File.Exists(dolphinPath + @"\Dolphin.exe"))
+                {
+                    Process.Start("\"" + dolphinPath + @"\Dolphin.exe" + "\"",
+                        @" -b " + "\"" + Configuration.Instance.RomLocation + "\"");
+                    Close();
+                }
+                else
+                {
+                    //MessageBox.Show("Could not find dolphin.exe. Please double check directory files.");
+                }
+            }
+        }
+        
+        EnableButtons(true);
+    }
+
+    private async Task OpenSetRomDialog()
+    {
+        var result = await SetFilePath("Set Path to SX ROM", 
+        new FileDialogFilter()
+        {
+            Name = "ROM File",
+            Extensions = new List<string>() {"iso"}
+        });
+        
+        Configuration.Instance.RomLocation = result == null ? "" : result.First();
+    }
+    
+    private async Task<string[]?> SetFilePath(string title, FileDialogFilter filter)
+    {
+        var ofd = new OpenFileDialog();
+        ofd.Title = title;
+        ofd.Filters = new List<FileDialogFilter>() { filter };
+        ofd.Directory = appStart;
+        ofd.AllowMultiple = false;
+        return await ofd.ShowAsync(this);
+    }
+
+    private async Task OpenSetDolphinDialog()
+    {
+        var result = await SetFolderPath("Set Path to Dolphin");
+        Configuration.Instance.DolphinLocation = String.IsNullOrEmpty(result) ? "" : result;
+    }
+
+    private async Task<string?> SetFolderPath(string title)
+    {
+        var ofd = new OpenFolderDialog();
+        ofd.Title = "Set Path to Dolphin";
+        ofd.Directory = appStart; 
+        return await ofd.ShowAsync(this);
+    }
+
     private void OpenGameLocationButtonPressed(object? sender, RoutedEventArgs e)
     {
         OpenFolder(appStart);
