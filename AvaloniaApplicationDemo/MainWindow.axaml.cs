@@ -80,6 +80,10 @@ public partial class MainWindow : Window
     private void EnableButtons(bool enable)
     {
         PlayButton.IsEnabled = enable;
+        CreateROMButton.IsEnabled = enable;
+        OpenGameLocationButton.IsEnabled = enable;
+        OpenSaveFileLocationButton.IsEnabled = enable;
+        SettingsButton.IsEnabled = enable;
     }
     
     private async void OnPlayButtonPressed(object? sender, RoutedEventArgs e)
@@ -105,7 +109,7 @@ public partial class MainWindow : Window
                 //Double check if the provided path has a file, if not re-prompt for a ROM.
                 if (!File.Exists(Configuration.Instance.RomLocation))
                 {
-                    //MessageBox.Show("ROM file not found. Please provide ROM location again.");
+                    ShowMessageBox("ROM file not found. Please provide ROM location again.");
                     //OpenRomDialog();
                 }
 
@@ -124,12 +128,19 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    //MessageBox.Show("Could not find dolphin.exe. Please double check directory files.");
+                    ShowMessageBox("Could not find dolphin.exe. Please double check directory files.");
                 }
             }
         }
         
         EnableButtons(true);
+    }
+
+    private void ShowMessageBox(string message)
+    {
+        var mb = new MessageBox();
+        mb.SetupMessageBox(message);
+        mb.ShowDialog(this);
     }
 
     private async Task OpenSetRomDialog()
@@ -178,7 +189,7 @@ public partial class MainWindow : Window
         var success = OpenFolder(savePath);
         if (!success)
         {
-            //MessageBox.Show("Please launch game to generate the save directory.");
+            ShowMessageBox("Please launch game to generate the save directory.");
         }
     }
 
